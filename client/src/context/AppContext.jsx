@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect } from "react";
 import { dummyCourses } from '../assets/assets';
 import humanizeDuration from 'humanize-duration';
+import { useAuth,useUser } from "@clerk/clerk-react";
 
 
 
@@ -10,6 +11,11 @@ export const AppContextProvider = ({ children, navigate }) => {
 
     // This is the currency that will be used in the application
     const currency = import.meta.env.VITE_CURRENCY || "$"
+
+    // to test  api endpoints we need authentication token
+    // This state is used to store the authentication token
+    const {getToken} = useAuth()
+    const {user} = useUser()
 
     // This state is used to store all the courses available in the application
     const [allCourses, setAllCourses] = useState([])
@@ -84,6 +90,17 @@ export const AppContextProvider = ({ children, navigate }) => {
         fetchAllCourses();
         fetchUserEnrolledCourses();
     }, [])
+
+
+    const logToken = async () => {
+        console.log(await getToken());  // This will log the authentication token to the console
+    }
+    // useEffect to check if the user is an educator or not
+    useEffect(() => {
+        if (user) {
+            logToken()
+        }
+    }, [user])
 
 
     // value to be passed to the context
